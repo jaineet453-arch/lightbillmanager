@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="en"><head><meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><link rel="manifest" href="manifest.json"><link rel="apple-touch-icon" href="icon-192.png"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="theme-color" content="#fbf8f0"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><link rel="icon" href="icon-192.png"><link rel="manifest" href="manifest.json"><link rel="apple-touch-icon" href="icon-192.png"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="theme-color" content="#fbf8f0"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
 <title>Light Manager – Electricity Bill Estimator</title>
 <style>
 :root{--bg:#fbf8f0;--card:#fffdf8;--ink:#1d2b24;--mut:#6b7a71;--g:#245c43;--y:#f6d85c;--ln:#ece6d8;--yb:#fbf0c4;--bar:#ece6d8;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px)}
@@ -49,6 +49,20 @@ nav .on span{background:var(--yb)}nav svg{width:22px;height:22px}
 #app>*{animation:rise .5s both}#app>:nth-child(2){animation-delay:.05s}#app>:nth-child(3){animation-delay:.1s}#app>:nth-child(4){animation-delay:.15s}#app>:nth-child(5){animation-delay:.2s}
 @keyframes rise{from{opacity:0;transform:translateY(12px)}}
 @keyframes grow{from{transform:scaleX(0)}}
+.pv{margin-top:12px;padding:11px 14px;border-radius:14px;background:var(--yb);font-weight:700;color:var(--ink);animation:pulse .5s}
+.pv small{font-weight:500;color:var(--mut)}
+.toast{position:fixed;left:50%;bottom:calc(92px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--g);color:#fff;padding:12px 20px;border-radius:16px;font-weight:700;box-shadow:0 12px 28px -12px rgba(36,92,67,.8);z-index:20;animation:pop 2.4s both;white-space:nowrap}
+.hero::before{animation:floaty 7s ease-in-out infinite}.hero::after{animation:floaty 9s ease-in-out infinite reverse}
+.card{transition:transform .2s}.card:active{transform:scale(.985)}
+.li{animation:slide .45s both}.li:nth-child(2){animation-delay:.06s}.li:nth-child(3){animation-delay:.12s}.li:nth-child(4){animation-delay:.18s}.li:nth-child(5){animation-delay:.24s}.li:nth-child(n+6){animation-delay:.3s}
+nav .on svg{animation:bob .5s}
+.hero .big{animation:glow 3s ease-in-out infinite}
+@keyframes pop{0%{opacity:0;transform:translate(-50%,24px) scale(.9)}12%{opacity:1;transform:translate(-50%,0) scale(1)}85%{opacity:1}100%{opacity:0;transform:translate(-50%,-10px)}}
+@keyframes floaty{50%{transform:translate(-10px,12px) scale(1.06)}}
+@keyframes slide{from{opacity:0;transform:translateX(-14px)}}
+@keyframes bob{40%{transform:translateY(-5px) scale(1.18)}}
+@keyframes pulse{from{transform:scale(.96);opacity:.6}}
+@keyframes glow{50%{text-shadow:0 0 18px rgba(246,216,92,.55)}}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style></head>
 <body><div id="app"></div>
@@ -60,10 +74,11 @@ hotdry:["Very hot and dry summers",["Air coolers work well in dry heat and use f
 composite:["Hot summers and cold winters",["In summer, 24–26°C on the AC with a fan is the best balance.","In winter, use a geyser timer and switch it off after heating. Hot water kept warm all day wastes power.","Room heaters use 1,000–2,000 W. Use them only in the room you are in, and for short periods.","Wear layers and use blankets before reaching for a heater.","Service the AC before summer for a clean filter and proper gas level."]],
 mild:["Mild, pleasant most of the year",["A ceiling fan is often enough. Try it for a week before using the AC.","Open windows in the morning and evening for natural cooling and light.","Use daylight in the daytime and switch off lights in empty rooms.","Replace any old bulbs with LEDs. They use about a fifth of the power.","Unplug chargers and set-top boxes when not in use."]],
 cold:["Cold winters, mild summers",["Heaters and geysers are your biggest users. Use timers and switch off when done.","Seal door and window gaps so heat stays in. Heaters then run less.","Use a hot water bottle or warm bedding instead of running a heater all night.","Keep the fridge setting moderate in winter. It needs less cooling.","Solar water heaters can cut geyser use a lot in sunny months."]]};
-const CAT=[["Air conditioner",1500,5],["Ceiling fan",75,12],["Refrigerator",75,24],["Television",100,4],["LED lights",45,6],["Air cooler",200,8],["Water heater (geyser)",2000,1],["Room heater",1500,2],["Washing machine",500,1],["Mixer grinder",500,0.5],["Iron",1000,0.5],["Microwave",1200,0.5],["Water pump",750,1],["Laptop",60,5]];
+const CAT=[["AC 1 ton",1000,5],["AC 1.5 ton",1500,5],["AC 2 ton",2000,5],["AC 2.5 ton",2500,5],["AC 3 ton",3000,5],["Ceiling fan",75,12],["Refrigerator",75,24],["Television",100,4],["LED lights",45,6],["Air cooler",200,8],["Water heater (geyser)",2000,1],["Room heater",1500,2],["Washing machine",500,1],["Mixer grinder",500,0.5],["Iron",1000,0.5],["Microwave",1200,0.5],["Water pump",750,1],["Laptop",60,5],["Custom (type your own watts)",100,1]];
 const KEY="lightmgr1";
-let S={city:"Kalyan, Maharashtra",people:4,rate:9,apps:[{n:"Air conditioner",w:1500,h:5},{n:"Ceiling fan",w:75,h:24},{n:"Refrigerator",w:75,h:24},{n:"Television",w:100,h:4},{n:"LED lights",w:45,h:6}],meter:{start:"",cur:"",date:""},plan:[],hist:[]};
+let S={city:"Kalyan, Maharashtra",people:4,rate:9,apps:[{n:"AC 1.5 ton",w:1500,h:5},{n:"Ceiling fan",w:75,h:24},{n:"Refrigerator",w:75,h:24},{n:"Television",w:100,h:4},{n:"LED lights",w:45,h:6}],meter:{start:"",cur:"",date:""},plan:[],hist:[]};
 try{const r=localStorage.getItem(KEY);if(r)S=Object.assign(S,JSON.parse(r))}catch(e){}
+S.apps.forEach(a=>{if(a.n=="Air conditioner")a.n="AC 1.5 ton"});
 const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}};
 const $=s=>document.querySelector(s),esc=t=>String(t).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const kwh=a=>a.w*a.h*30/1000,tot=()=>S.apps.reduce((s,a)=>s+kwh(a),0),inr=n=>"₹"+Math.round(n).toLocaleString("en-IN");
@@ -74,28 +89,29 @@ const TABS=[["home",I(IC.home),"Home"],["apps",I(IC.apps),"Appliances"],["save",
 function nav(){$("#nav").innerHTML=TABS.map(t=>`<button class="${tab==t[0]?"on":""}" onclick="go('${t[0]}')"><span>${t[1]}</span>${t[2]}</button>`).join("")}
 function go(t){tab=t;nav();render();scrollTo(0,0)}
 function head(t,s){return `<div class="top"><div><div class="eyebrow">${esc(S.city)}</div><h1>${t}</h1><div class="sub">${s}</div></div><button class="icon" aria-label="Settings" onclick="go('set')">${I(IC.set)}</button></div>`}
-function projection(){const m=S.meter,a=parseFloat(m.start),b=parseFloat(m.cur);if(!(b>a)||!m.date)return null;const d=Math.max(1,(Date.now()-new Date(m.date))/864e5);const used=b-a;return{used,d,proj:used/d*30}}
+let last=0;
+function fmt(h){const t=Math.round(h*60),H=Math.floor(t/60),M=t%60;return(H?H+" h":"")+(H&&M?" ":"")+(M?M+" min":"")||"0 min"}
+function toast(t){const e=document.createElement("div");e.className="toast";e.textContent=t;document.body.appendChild(e);setTimeout(()=>e.remove(),2400)}
+function cnt(el,a,b){if(!el)return;const t0=performance.now(),f=n=>{const p=Math.min(1,(n-t0)/800),e=1-Math.pow(1-p,3);el.textContent=inr(a+(b-a)*e);if(p<1)requestAnimationFrame(f)};requestAnimationFrame(f)}
 function render(){const el=$("#app");({home,apps,save:savings,tips,hist,set:settings})[tab](el)}
-function home(el){const T=tot(),top=[...S.apps].sort((a,b)=>kwh(b)-kwh(a)).slice(0,4),mx=top[0]?kwh(top[0]):1,p=projection();
-const tp=CLIM[CITY[S.city]||"mild"][1][0];
+function home(el){const T=tot(),top=[...S.apps].sort((a,b)=>kwh(b)-kwh(a)).slice(0,4),mx=top[0]?kwh(top[0]):1,tp=CLIM[CITY[S.city]||"mild"][1][0];
 el.innerHTML=head("Your home",`Our home · ${S.people} people`)+
-`<div class="card hero"><div class="eyebrow">Monthly planning estimate</div><div class="big">${inr(T*S.rate)}</div><small>${T.toFixed(1)} kWh · ₹${S.rate} per kWh</small></div>
+`<div class="card hero"><div class="eyebrow">Monthly planning estimate</div><div class="big" id="bb">${inr(last)}</div><small>${T.toFixed(1)} kWh · ₹${S.rate} per kWh</small></div>
 <div class="row"><div class="card"><div class="eyebrow">Appliances</div><div class="num">${S.apps.length}</div><div class="sub">in your estimate</div></div><div class="card"><div class="eyebrow">Household</div><div class="num">${S.people}</div><div class="sub">people at home</div></div></div>
-<div class="card"><h2>Meter reading</h2><div class="sub">${p?`${p.used.toFixed(1)} units in ${Math.round(p.d)} days. On track for about <b>${p.proj.toFixed(0)} units</b> (${inr(p.proj*S.rate)}) this month.`:"Enter your meter readings to see your real usage."}</div>
-<div class="row" style="gap:8px"><div><label>Start reading</label><input id="ms" type="number" inputmode="decimal" value="${esc(S.meter.start)}"></div><div><label>Today’s reading</label><input id="mc" type="number" inputmode="decimal" value="${esc(S.meter.cur)}"></div></div>
-<label>Cycle start date</label><input id="md" type="date" value="${esc(S.meter.date)}"><button class="btn" onclick="setMeter()">Update meter</button>
-${p?`<div class="warn">Appliance estimate: ${T.toFixed(0)} units. ${Math.abs(p.proj-T)<T*.1?"Close to your meter.":p.proj>T?"Your meter shows more use than your appliance list. Check for missing appliances.":"Your meter shows less use than your list. Check your hours."}</div>`:""}</div>
-<div class="card"><h2>Where power goes</h2><div class="sub">Highest monthly energy use</div>${top.map(a=>`<div class="bar"><span>${esc(a.n)}</span><b>${kwh(a).toFixed(1)} kWh</b></div><div class="track"><div class="fill" style="width:${kwh(a)/mx*100}%"></div></div>`).join("")}</div>
-<div class="card tip"><div class="eyebrow">A small first step</div><p style="margin:8px 0 0">${esc(tp)}</p></div>`}
-function setMeter(){S.meter={start:$("#ms").value,cur:$("#mc").value,date:$("#md").value};save();render()}
-function apps(el){const opts=CAT.map((c,i)=>`<option value="${i}">${c[0]}</option>`).join("");
-el.innerHTML=head("Appliances","Add what you use. No electricity terms needed.")+
-`<div class="card"><label>Choose appliance</label><select id="ca" onchange="fillCat()">${opts}</select>
-<div class="row" style="gap:8px"><div><label>Power (watts)</label><input id="aw" type="number" inputmode="decimal"></div><div><label>Hours per day</label><input id="ah" type="number" inputmode="decimal" step="0.5"></div></div>
-<button class="btn" onclick="addApp()">Add appliance</button><div class="warn">Watts are printed on the appliance label.</div></div>
-<div class="card">${S.apps.length?S.apps.map((a,i)=>`<div class="li"><div>${esc(a.n)}<br><small>${a.w} W × ${a.h} h/day · ${kwh(a).toFixed(1)} kWh/month</small></div><div><b>${inr(kwh(a)*S.rate)}</b> <button class="x" aria-label="Remove" onclick="rm(${i})">✕</button></div></div>`).join(""):"<div class='sub'>No appliances yet.</div>"}</div>`;fillCat()}
-function fillCat(){const c=CAT[$("#ca").value];$("#aw").value=c[1];$("#ah").value=c[2]}
-function addApp(){const c=CAT[$("#ca").value],w=parseFloat($("#aw").value),h=parseFloat($("#ah").value);if(!(w>0)||!(h>=0)||h>24)return;S.apps.push({n:c[0],w,h});save();render()}
+<div class="card"><h2>Where power goes</h2><div class="sub">Highest monthly energy use</div>${top.map((a,i)=>`<div class="bar"><span>${esc(a.n)}</span><b>${kwh(a).toFixed(1)} kWh</b></div><div class="track"><div class="fill" style="width:${kwh(a)/mx*100}%;animation-delay:${.25+i*.15}s"></div></div>`).join("")}</div>
+<div class="card tip"><div class="eyebrow">A small first step</div><p style="margin:8px 0 0">${esc(tp)}</p></div>`;
+cnt($("#bb"),last,T*S.rate);last=T*S.rate}
+function apps(el){const opts=CAT.map((c,i)=>`<option value="${i}">${c[0]}</option>`).join(""),T=tot();
+el.innerHTML=head("Appliances","Add what you use. It goes straight into your bill.")+
+`<div class="card hero"><div class="eyebrow">Your monthly bill</div><div class="big" id="tb">${inr(last)}</div><small>${S.apps.length} appliances · ${T.toFixed(1)} kWh</small></div>
+<div class="card"><label>Choose appliance</label><select id="ca" onchange="fillCat()">${opts}</select>
+<div style="display:grid;grid-template-columns:1.2fr 1fr 1fr;gap:8px"><div><label id="wl">Watts</label><input id="aw" type="number" inputmode="decimal" oninput="pv()"></div><div><label>Hours</label><input id="ah" type="number" inputmode="numeric" min="0" max="24" oninput="pv()"></div><div><label>Minutes</label><input id="am" type="number" inputmode="numeric" min="0" max="59" oninput="pv()"></div></div>
+<div class="pv" id="pv"></div><button class="btn" onclick="addApp()">Add to my bill</button><div class="warn">Hours and minutes are per day. Watts fill in automatically, for example 1 ton AC = 1000 W per hour. Choose Custom to type your own.</div></div>
+<div class="card">${S.apps.length?S.apps.map((a,i)=>`<div class="li"><div>${esc(a.n)}<br><small>${a.w} W × ${fmt(a.h)}/day · ${kwh(a).toFixed(1)} kWh/month</small></div><div><b>${inr(kwh(a)*S.rate)}</b> <button class="x" aria-label="Remove" onclick="rm(${i})">✕</button></div></div>`).join(""):"<div class='sub'>No appliances yet.</div>"}</div>`;
+fillCat();cnt($("#tb"),last,T*S.rate);last=T*S.rate}
+function fillCat(){const i=+$("#ca").value,c=CAT[i],cu=i==CAT.length-1;$("#aw").value=c[1];$("#aw").readOnly=!cu;$("#aw").style.opacity=cu?1:.6;$("#wl").textContent=cu?"Watts":"Watts (auto)";$("#ah").value=Math.floor(c[2]);$("#am").value=Math.round((c[2]%1)*60);pv()}
+function pv(){const w=parseFloat($("#aw").value)||0,h=(parseFloat($("#ah").value)||0)+(parseFloat($("#am").value)||0)/60,k=w*h*30/1000;$("#pv").innerHTML=h>0&&w>0?`+${inr(k*S.rate)} per month <small>· ${k.toFixed(1)} kWh · ₹${(w/1000*S.rate).toFixed(1)} per hour</small>`:"Enter watts and time to see the cost"}
+function addApp(){const c=CAT[$("#ca").value],w=parseFloat($("#aw").value),h=(parseFloat($("#ah").value)||0)+(parseFloat($("#am").value)||0)/60;if(!(w>0)||!(h>0)||h>24){toast("Enter watts and a time up to 24 h");return}const add=w*h*30/1000*S.rate;S.apps.push({n:c[0],w,h});save();render();toast("+"+inr(add)+" added to your bill")}
 function rm(i){S.apps.splice(i,1);S.plan=S.plan.filter(p=>p.i!=i).map(p=>({...p,i:p.i>i?p.i-1:p.i}));save();render()}
 let mins=5;
 function savings(el){S.plan=S.plan.filter(p=>S.apps[p.i]);const tsv=S.plan.reduce((s,p)=>s+S.apps[p.i].w*p.m/60*30/1000*S.rate,0);
@@ -107,15 +123,15 @@ el.innerHTML=head("Savings","How can I reduce the bill amount?")+
 <div class="card">${S.plan.length?S.plan.map((p,i)=>{const a=S.apps[p.i];return `<div class="li"><div>${esc(a.n)}<br><small>${p.m} min less per day</small></div><div><b>${inr(a.w*p.m/60*30/1000*S.rate)}</b> <button class="x" aria-label="Remove" onclick="S.plan.splice(${i},1);save();render()">✕</button></div></div>`}).join(""):"<div class='sub'>Pick an appliance and see how much a few minutes saved each day adds up to.</div>"}</div>`}
 function addPlan(){const i=+$("#sa").value;if(isNaN(i)||!S.apps[i])return;const e=S.plan.find(p=>p.i==i);e?e.m+=mins:S.plan.push({i,m:mins});save();render()}
 function tips(el){const k=CITY[S.city]||"mild",c=CLIM[k],names=S.apps.map(a=>a.n);const ex=[];
-if(names.includes("Air conditioner"))ex.push("Your AC is your biggest user. Use a timer or sleep mode at night so it does not run all hours.");
+if(names.some(n=>/^AC |Air conditioner/.test(n)))ex.push("Your AC is your biggest user. Use a timer or sleep mode at night so it does not run all hours.");
 if(names.includes("Refrigerator"))ex.push("Keep the fridge door closed, leave gaps for air, and do not put hot food inside.");
 if(names.includes("Television"))ex.push("Switch the TV off at the plug. Standby still uses power.");
 if(names.includes("Water heater (geyser)"))ex.push("Switch the geyser off once the water is hot. Fit a timer if you can.");
 el.innerHTML=head("Tips","For "+esc(S.city))+`<div class="card tip"><div class="eyebrow">Your climate</div><p style="margin:6px 0 0"><b>${c[0]}</b></p></div>
 <div class="card"><h2>For your region</h2>${c[1].map(t=>`<div class="li"><div>${esc(t)}</div></div>`).join("")}</div>
 ${ex.length?`<div class="card"><h2>For your appliances</h2>${ex.map(t=>`<div class="li"><div>${esc(t)}</div></div>`).join("")}</div>`:""}`}
-function hist(el){el.innerHTML=head("History","Past monthly estimates")+`<div class="card"><button class="btn" style="margin:0" onclick="snap()">Save this month’s snapshot</button></div><div class="card">${S.hist.length?S.hist.map(h=>`<div class="li"><div>${esc(h.d)}<br><small>${h.k.toFixed(1)} kWh${h.m?` · meter ${h.m} units`:""}</small></div><b>${inr(h.k*h.r)}</b></div>`).join(""):"<div class='sub'>No snapshots yet.</div>"}</div>`}
-function snap(){const p=projection();S.hist.unshift({d:new Date().toLocaleDateString("en-IN",{month:"long",year:"numeric",day:"numeric"}),k:tot(),r:S.rate,m:p?p.used.toFixed(0):""});save();render()}
+function hist(el){el.innerHTML=head("History","Past monthly estimates")+`<div class="card"><button class="btn" style="margin:0" onclick="snap()">Save this month’s snapshot</button></div><div class="card">${S.hist.length?S.hist.map(h=>`<div class="li"><div>${esc(h.d)}<br><small>${h.k.toFixed(1)} kWh</small></div><b>${inr(h.k*h.r)}</b></div>`).join(""):"<div class='sub'>No snapshots yet.</div>"}</div>`}
+function snap(){S.hist.unshift({d:new Date().toLocaleDateString("en-IN",{month:"long",year:"numeric",day:"numeric"}),k:tot(),r:S.rate});save();render()}
 function settings(el){el.innerHTML=head("Profile","Your home settings")+`<div class="card"><label>City and state</label><select id="sc">${Object.keys(CITY).map(c=>`<option ${c==S.city?"selected":""}>${c}</option>`).join("")}</select>
 <label>People at home</label><input id="sp" type="number" min="1" value="${S.people}"><label>Rate per kWh (₹)</label><input id="sr" type="number" step="0.1" value="${S.rate}">
 <div class="warn">Check the per-unit rate on your own bill and enter it here. Estimates will not match the real bill exactly because of fixed charges and taxes.</div>
